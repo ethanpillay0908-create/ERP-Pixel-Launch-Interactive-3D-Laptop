@@ -196,8 +196,8 @@ window.addEventListener("pointermove", (event) => {
     const deltaX = event.clientX - previousX;
     const deltaY = event.clientY - previousY;
 
-    laptop.rotation.y += deltaX * 0.1;
-    laptop.rotation.x += deltaY * 0.1;
+    laptop.rotation.y += deltaX * 0.05;
+    laptop.rotation.x += deltaY * 0.05;
 
     previousX = event.clientX;
     previousY = event.clientY;
