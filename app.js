@@ -172,31 +172,36 @@ function animate() {
     renderer.render(scene, camera);
 }
 let isDragging = false;
-let previousMouseX = 0;
-let previousMouseY = 0;
+let previousX = 0;
+let previousY = 0;
 
-window.addEventListener("mousedown", (event) => {
+window.addEventListener("pointerdown", (event) => {
+
     isDragging = true;
-    previousMouseX = event.clientX;
-    previousMouseY = event.clientY;
+    previousX = event.clientX;
+    previousY = event.clientY;
+
 });
 
-window.addEventListener("mouseup", () => {
+window.addEventListener("pointerup", () => {
+
     isDragging = false;
+
 });
 
-window.addEventListener("mousemove", (event) => {
+window.addEventListener("pointermove", (event) => {
 
     if (!isDragging) return;
 
-    const deltaX = event.clientX - previousMouseX;
-    const deltaY = event.clientY - previousMouseY;
+    const deltaX = event.clientX - previousX;
+    const deltaY = event.clientY - previousY;
 
     laptop.rotation.y += deltaX * 0.01;
     laptop.rotation.x += deltaY * 0.01;
 
-    previousMouseX = event.clientX;
-    previousMouseY = event.clientY;
+    previousX = event.clientX;
+    previousY = event.clientY;
+
 });
 animate();
 
