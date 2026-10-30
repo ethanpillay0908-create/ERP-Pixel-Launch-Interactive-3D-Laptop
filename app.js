@@ -2,7 +2,7 @@ import * as THREE from 'https://unpkg.com/three@0.179.1/build/three.module.js';
 
 // Scene
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x000000);
+scene.background = new THREE.Color(0x09090B);
 
 // Clock
 const clock = new THREE.Clock();
@@ -10,6 +10,8 @@ const clock = new THREE.Clock();
 // Laptop Group
 const laptop = new THREE.Group();
 scene.add(laptop);
+laptop.scale.set(1.6, 1.6, 1.6);
+laptop.rotation.x = 0.15;
 
 // Camera
 const camera = new THREE.PerspectiveCamera(
@@ -19,7 +21,8 @@ const camera = new THREE.PerspectiveCamera(
     1000
 );
 
-camera.position.set(0, 0, 10);
+camera.position.set(0, 2.5, 10);
+camera.lookAt(0, 0, 0);
 
 // Renderer
 const renderer = new THREE.WebGLRenderer({
@@ -50,13 +53,59 @@ const ambient = new THREE.AmbientLight(
 
 scene.add(ambient);
 
-// Laptop Material
-const laptopMaterial =
+// ERP Glow
+
+const glow = new THREE.PointLight(
+    0x5EEAD4,
+    120
+);
+const purpleGlow = new THREE.PointLight(
+    0x8B5CF6,
+    150
+);
+
+purpleGlow.position.set(
+    2,
+    0,
+    1
+);
+
+scene.add(purpleGlow);
+
+glow.position.set(
+    0,
+    -1,
+    0
+);
+
+scene.add(glow);
+const floor = new THREE.Mesh(
+    new THREE.PlaneGeometry(50, 50),
     new THREE.MeshStandardMaterial({
-        color: 0xffffff,
-        metalness: 0.5,
-        roughness: 0.3
-    });
+        color: 0x111111,
+        roughness: 0.8
+    })
+);
+
+floor.rotation.x = -Math.PI / 2;
+floor.position.y = -5.5;
+
+scene.add(floor);
+
+// Laptop Material
+// Premium Brushed Aluminium Material
+const laptopMaterial = new THREE.MeshPhysicalMaterial({
+
+    color: 0xC8D4E2,
+    metalness: 0.45,
+    roughness: 0.28,
+    reflectivity: 1,
+    clearcoat: 0.8,
+    clearcoatRoughness: 0.2,
+    emissive: 0x17243A,
+    emissiveIntensity: 0.12
+
+});
 
 // Base
 const base = new THREE.Mesh(
@@ -77,7 +126,8 @@ const trackpad = new THREE.Mesh(
         0.03,
         0.8
     ),
-    new THREE.MeshStandardMaterial({
+
+new THREE.MeshStandardMaterial({
         color: 0x888888
     })
 );
@@ -90,6 +140,35 @@ trackpad.position.set(
 
 laptop.add(trackpad);
 
+const keyMaterial =
+    new THREE.MeshStandardMaterial({
+        color: 0x151923,
+        metalness: 0.25,
+        roughness: 0.4
+    });
+
+for (let row = 0; row < 5; row++) {
+
+    for (let col = 0; col < 14; col++) {
+
+        const key = new THREE.Mesh(
+            new THREE.BoxGeometry(
+                0.16,
+                0.05,
+                0.16
+            ),
+            keyMaterial
+        );
+
+        key.position.set(
+            -1.3 + col * 0.2,
+            0.13,
+            -0.9 + row * 0.22
+        );
+
+        laptop.add(key);
+    }
+}
 // Screen Group
 const screenGroup =
     new THREE.Group();
@@ -137,6 +216,8 @@ const logo = new THREE.Mesh(
     new THREE.MeshBasicMaterial({
         map: logoTexture,
         transparent: true,
+        emissive: 0xffffff,
+        emissiveIntensity: 0.8,
         side: THREE.DoubleSide
     })
 );
@@ -149,8 +230,8 @@ screenGroup.add(logo);
 
 screenGroup.position.set(
     0,
-    1.1,
-    -1.14
+    1.2,
+    -1.8
 );
 
 screenGroup.rotation.x = -0.5;
@@ -167,7 +248,7 @@ function animate() {
 
     // Floating effect
     laptop.position.y =
-        Math.sin(time * 1.5) * 0.15;
+        -1.5 + Math.sin(time * 1.5) * 0.15;
 
     renderer.render(scene, camera);
 }
@@ -201,6 +282,8 @@ window.addEventListener("pointermove", (event) => {
 
     previousX = event.clientX;
     previousY = event.clientY;
+
+    laptop.rotation.y += 0.002;
 
 });
 animate();
