@@ -239,54 +239,89 @@ screenGroup.rotation.x = -0.5;
 laptop.add(screenGroup);
 
 // Animation
-function animate() {
 
-    requestAnimationFrame(animate);
+// Animation & Smooth Controls
 
-    const time =
-        clock.getElapsedTime();
-
-    // Floating effect
-    laptop.position.y =
-        -1.5 + Math.sin(time * 1.5) * 0.15;
-
-    renderer.render(scene, camera);
-}
 let isDragging = false;
+
 let previousX = 0;
 let previousY = 0;
 
-window.addEventListener("pointerdown", (event) => {
+// Target rotation
+let targetRotationX = laptop.rotation.x;
+let targetRotationY = laptop.rotation.y;
+
+// Rotation smoothness
+const smoothness = 0.12;
+
+// Enable touchscreen interaction
+renderer.domElement.style.touchAction = "none";
+
+// Start dragging
+renderer.domElement.addEventListener("pointerdown", (event) => {
 
     isDragging = true;
+
     previousX = event.clientX;
     previousY = event.clientY;
 
+    renderer.domElement.setPointerCapture(event.pointerId);
+
 });
 
-window.addEventListener("pointerup", () => {
+// Stop dragging
+renderer.domElement.addEventListener("pointerup", () => {
 
     isDragging = false;
 
 });
 
-window.addEventListener("pointermove", (event) => {
+renderer.domElement.addEventListener("pointercancel", () => {
+
+    isDragging = false;
+
+});
+
+// Track movement
+renderer.domElement.addEventListener("pointermove", (event) => {
 
     if (!isDragging) return;
 
     const deltaX = event.clientX - previousX;
     const deltaY = event.clientY - previousY;
 
-    laptop.rotation.y += deltaX * 0.01;
-    laptop.rotation.x += deltaY * 0.01;
+    targetRotationY += deltaX * 0.006;
+    targetRotationX += deltaY * 0.006;
 
     previousX = event.clientX;
     previousY = event.clientY;
 
-    laptop.rotation.y += 0.002;
-
 });
+
+// Animation
+function animate() {
+
+    requestAnimationFrame(animate);
+
+    const time = clock.getElapsedTime();
+
+    // Floating effect
+    laptop.position.y =
+        -1.5 + Math.sin(time * 1.5) * 0.12;
+
+    // Smooth rotation
+    laptop.rotation.x +=
+        (targetRotationX - laptop.rotation.x) * smoothness;
+
+    laptop.rotation.y +=
+        (targetRotationY - laptop.rotation.y) * smoothness;
+
+    renderer.render(scene, camera);
+
+}
+
 animate();
+
 
 // Resize
 window.addEventListener(
